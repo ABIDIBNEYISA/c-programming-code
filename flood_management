@@ -1,1 +1,165 @@
+#include <stdio.h>
+#include <stdlib.h>
 
+struct Emergency {
+    int id, people, water, medical, priority;
+    struct Emergency *next;
+};
+
+struct Emergency *front = NULL;
+
+/* Calculate emergency priority */
+int calculatePriority(int people, int water, int medical) {
+    return people * 5 + water * 5 + medical * 30;
+}
+
+/* Add emergency to Priority Queue */
+void addEmergency() {
+    struct Emergency *n, *p;
+
+    n = (struct Emergency *)malloc(sizeof(struct Emergency));
+    if (n == NULL) {
+        printf("Memory allocation failed!\n");
+        return;
+    }
+
+    printf("\nEnter ID, People, Water Level, Medical(1/0): ");
+    scanf("%d%d%d%d", &n->id, &n->people, &n->water, &n->medical);
+
+    n->priority = calculatePriority(n->people, n->water, n->medical);
+    n->next = NULL;
+
+    if (front == NULL || n->priority > front->priority) {
+        n->next = front;
+        front = n;
+    } else {
+        p = front;
+
+        while (p->next && p->next->priority >= n->priority)
+            p = p->next;
+
+        n->next = p->next;
+        p->next = n;
+    }
+
+    printf("Emergency added! Priority: %d\n", n->priority);
+}
+
+/* Process highest priority emergency */
+void processEmergency() {
+    struct Emergency *p;
+
+    if (front == NULL) {
+        printf("\nNo pending emergencies!\n");
+        return;
+    }
+
+    p = front;
+
+    printf("\nProcessing Emergency %d\n", p->id);
+    printf("People: %d\n", p->people);
+    printf("Priority: %d\n", p->priority);
+
+    front = p->next;
+    free(p);
+}
+
+/* Show all pending emergencies */
+void showEmergencies() {
+    struct Emergency *p = front;
+
+    printf("\n--- PENDING EMERGENCIES ---\n");
+
+    if (p == NULL) {
+        printf("No emergencies.\n");
+        return;
+    }
+
+    while (p) {
+        printf("ID: %d | People: %d | Priority: %d\n",
+               p->id, p->people, p->priority);
+        p = p->next;
+    }
+}
+
+/* Search an emergency by ID */
+void searchEmergency() {
+    struct Emergency *p = front;
+    int id;
+
+    printf("\nEnter Emergency ID: ");
+    scanf("%d", &id);
+
+    while (p) {
+        if (p->id == id) {
+            printf("\nEmergency Found!\n");
+            printf("People: %d\n", p->people);
+            printf("Water Level: %d\n", p->water);
+            printf("Medical: %d\n", p->medical);
+            printf("Priority: %d\n", p->priority);
+            return;
+        }
+        p = p->next;
+    }
+
+    printf("Emergency not found.\n");
+}
+
+/* Show flood statistics */
+void statistics() {
+    struct Emergency *p = front;
+    int count = 0, people = 0;
+    int medical = 0, highestWater = 0;
+
+    while (p) {
+        count++;
+        people += p->people;
+
+        if (p->medical)
+            medical++;
+
+        if (p->water > highestWater)
+            highestWater = p->water;
+
+        p = p->next;
+    }
+
+    printf("\n--- FLOOD STATISTICS ---\n");
+    printf("Pending Emergencies: %d\n", count);
+    printf("People Affected: %d\n", people);
+    printf("Medical Emergencies: %d\n", medical);
+    printf("Highest Water Level: %d\n", highestWater);
+}
+
+int main() {
+    int choice;
+
+    while (1) {
+        printf("\n===== SMART FLOOD MANAGEMENT =====\n");
+        printf("1. Add Flood Emergency\n");
+        printf("2. Process Highest Priority\n");
+        printf("3. Show Pending Emergencies\n");
+        printf("4. Search Emergency by ID\n");
+        printf("5. Show Flood Statistics\n");
+        printf("6. Exit\n");
+        printf("Choice: ");
+        scanf("%d", &choice);
+
+        if (choice == 1)
+            addEmergency();
+        else if (choice == 2)
+            processEmergency();
+        else if (choice == 3)
+            showEmergencies();
+        else if (choice == 4)
+            searchEmergency();
+        else if (choice == 5)
+            statistics();
+        else if (choice == 6)
+            break;
+        else
+            printf("Invalid choice!\n");
+    }
+
+    return 0;
+}
