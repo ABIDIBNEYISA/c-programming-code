@@ -8,12 +8,10 @@ struct Emergency {
 
 struct Emergency *front = NULL;
 
-/* Calculate emergency priority */
 int calculatePriority(int people, int water, int medical) {
     return people * 5 + water * 5 + medical * 30;
 }
 
-/* Add emergency to Priority Queue */
 void addEmergency() {
     struct Emergency *n, *p;
 
@@ -45,7 +43,6 @@ void addEmergency() {
     printf("Emergency added! Priority: %d\n", n->priority);
 }
 
-/* Process highest priority emergency */
 void processEmergency() {
     struct Emergency *p;
 
@@ -64,7 +61,6 @@ void processEmergency() {
     free(p);
 }
 
-/* Show all pending emergencies */
 void showEmergencies() {
     struct Emergency *p = front;
 
@@ -82,7 +78,6 @@ void showEmergencies() {
     }
 }
 
-/* Search an emergency by ID */
 void searchEmergency() {
     struct Emergency *p = front;
     int id;
@@ -105,7 +100,6 @@ void searchEmergency() {
     printf("Emergency not found.\n");
 }
 
-/* Show flood statistics */
 void statistics() {
     struct Emergency *p = front;
     int count = 0, people = 0;
